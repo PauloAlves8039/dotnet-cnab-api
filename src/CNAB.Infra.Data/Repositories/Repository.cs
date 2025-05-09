@@ -18,28 +18,27 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        try
+        var entities = await _context.Set<TEntity>().ToListAsync();
+
+        if (entities == null || !entities.Any())
         {
-            return await _context.Set<TEntity>().ToListAsync();
+            _logger.LogWarning($"No records found for entity type: {typeof(TEntity).Name}");
+            return Enumerable.Empty<TEntity>();
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching list of records: {exception.Message}");
-            throw;
-        }
+
+        return entities;
     }
 
     public virtual async Task<TEntity> GetByIdAsync(Guid id)
     {
-        try
+        var entity = await _context.Set<TEntity>().FindAsync(id);
+
+        if (entity == null)
         {
-            return await _context.Set<TEntity>().FindAsync(id);
+            _logger.LogWarning($"No record found for ID: {id}");
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching record by ID '{id}': {exception.Message}");
-            throw;
-        }
+
+        return entity;
     }
 
     public virtual async Task<TEntity> AddAsync(TEntity entity)
