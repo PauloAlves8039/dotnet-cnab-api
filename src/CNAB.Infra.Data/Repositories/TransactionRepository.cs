@@ -12,31 +12,30 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
 
     public override async Task<IEnumerable<Transaction>> GetAllAsync()
     {
-        try
-        {
-            return await _context.Set<Transaction>()
-                .Include(t => t.Store)
-                .ToListAsync();
-        }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching list of records: {exception.Message}");
-            throw;
-        }
-    }
+        var transactions = await _context.Set<Transaction>()
+            .Include(s => s.Store)
+            .ToListAsync();
 
-    public override async Task<Transaction> GetByIdAsync(Guid id)
+        if (transactions == null || !transactions.Any())
+        {
+            _logger.LogWarning("No transactions found in the database.");
+            return Enumerable.Empty<Transaction>();
+        }
+
+        return transactions;
+    }
+    
+    public override async Task<Transaction?> GetByIdAsync(Guid id)
     {
-        try
+        var transaction = await _context.Set<Transaction>()
+            .Include(s => s.Store)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (transaction == null)
         {
-            return await _context.Set<Transaction>()
-                .Include(t => t.Store)
-                .FirstOrDefaultAsync(t => t.Id == id);
+            _logger.LogWarning($"No transaction found with ID: {id}");
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching record by ID '{id}' {exception.Message}");
-            throw;
-        }
+
+        return transaction;
     }
 }

@@ -12,45 +12,42 @@ public class StoreRepository : Repository<Store>, IStoreRepository
 
     public override async Task<IEnumerable<Store>> GetAllAsync()
     {
-        try
+        var stores = await _context.Set<Store>()
+            .Include(s => s.Transactions)
+            .ToListAsync();
+
+        if (stores == null || !stores.Any())
         {
-            return await _context.Set<Store>()
-                .Include(s => s.Transactions)
-                .ToListAsync();
+            _logger.LogWarning("No stores found in the database.");
+            return Enumerable.Empty<Store>();
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching list of records: {exception.Message}");
-            throw;
-        }
+
+        return stores;
     }
 
     public override async Task<Store> GetByIdAsync(Guid id)
     {
-        try
+        var store = await _context.Set<Store>()
+            .Include(s => s.Transactions)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (store == null)
         {
-            return await _context.Set<Store>()
-                .Include(s => s.Transactions)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            _logger.LogWarning($"No store found with ID: {id}");
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching record by ID '{id}': {exception.Message}");
-            throw;
-        }
+
+        return store;
     }
 
     public async Task<Store> GetByNameAsync(string storeName)
     {
-        try
+        var store = await _context.Stores.FirstOrDefaultAsync(s => s.Name == storeName);
+
+        if (store == null)
         {
-            return await _context.Stores
-                .FirstOrDefaultAsync(s => s.Name == storeName);
+            _logger.LogWarning($"No store found with name: {storeName}");
         }
-        catch (InvalidOperationException exception)
-        {
-            _logger.LogError($"Error when searching Store by Name: '{storeName}': {exception.Message}");
-            throw;
-        }
+
+        return store;
     }
 }

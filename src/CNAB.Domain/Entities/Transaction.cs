@@ -95,6 +95,8 @@ namespace CNAB.Domain.Entities
             Store store)
         {
             DomainExceptionValidation.GetErrors(id == Guid.Empty, "Invalid Id, Id cannot be empty");
+            DomainExceptionValidation.GetErrors(!Enum.IsDefined(typeof(TransactionType), type), "Invalid type, Transaction type is required");
+            DomainExceptionValidation.GetErrors(occurrenceDate == default(DateTime), "Invalid occurrenceDate, Date is required");
             DomainExceptionValidation.GetErrors(amount <= 0, "Invalid amount, must be greater than zero");
             DomainExceptionValidation.GetErrors(string.IsNullOrWhiteSpace(cpf), "Invalid CPF, CPF is required");
             DomainExceptionValidation.GetErrors(cpf.Length != 11, "Invalid CPF, must be 11 characters");
