@@ -25,7 +25,7 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
         return transactions;
     }
     
-    public override async Task<Transaction?> GetByIdAsync(Guid id)
+    public override async Task<Transaction> GetByIdAsync(Guid id)
     {
         var transaction = await _context.Set<Transaction>()
             .Include(s => s.Store)

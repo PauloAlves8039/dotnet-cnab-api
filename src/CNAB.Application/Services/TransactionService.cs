@@ -103,25 +103,5 @@ namespace CNAB.Application.Services
 
             await _transactionRepository.DeleteAsync(id);
         }
-
-        public async Task<IEnumerable<TransactionDto>> GetIncomeTransactionsAsync()
-        {
-            var transactions = await _transactionRepository.GetAllAsync();
-            var incomeTransactions = transactions.Where(transaction => transaction.IsIncome);
-            return _mapper.Map<IEnumerable<TransactionDto>>(incomeTransactions);
-        }
-
-        public async Task<IEnumerable<TransactionDto>> GetExpenseTransactionsAsync()
-        {
-            var transactions = await _transactionRepository.GetAllAsync();
-            var expenseTransactions = transactions.Where(transaction => transaction.IsExpense);
-            return _mapper.Map<IEnumerable<TransactionDto>>(expenseTransactions);
-        }
-
-        public async Task<decimal> GetTotalSignedAmountAsync()
-        {
-            var transactions = await _transactionRepository.GetAllAsync();
-            return transactions.Sum(transaction => transaction.SignedAmount);
-        }
     }
 }

@@ -22,7 +22,6 @@ public class TransactionDto
     public string CPF { get; set; }
 
     [Required(ErrorMessage = "Card Number is required")]
-    [StringLength(16, MinimumLength = 16, ErrorMessage = "Card Number must be 16 characters")]
     public string CardNumber { get; set; }
 
     [Required(ErrorMessage = "Time is required")]
