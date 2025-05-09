@@ -1,6 +1,8 @@
 using CNAB.Domain.Interfaces;
 using CNAB.Infra.Data.Context;
 using CNAB.Infra.Data.Repositories;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,10 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IStoreRepository, StoreRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+        var config = new TypeAdapterConfig();
+        services.AddSingleton(config);
+        services.AddScoped<IMapper, ServiceMapper>();
         
         return services;
     }
