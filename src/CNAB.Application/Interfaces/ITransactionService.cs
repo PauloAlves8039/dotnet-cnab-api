@@ -9,8 +9,5 @@ namespace CNAB.Application.Interfaces
         Task<TransactionDto> AddTransactionAsync(TransactionDto transactionDto);
         Task<TransactionDto> UpdateTransactionAsync(TransactionDto transactionDto);
         Task DeleteTransactionAsync(Guid id);
-        Task<IEnumerable<TransactionDto>> GetIncomeTransactionsAsync();
-        Task<IEnumerable<TransactionDto>> GetExpenseTransactionsAsync();
-        Task<decimal> GetTotalSignedAmountAsync();
     }
 }
