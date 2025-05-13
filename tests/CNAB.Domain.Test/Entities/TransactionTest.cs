@@ -1,5 +1,6 @@
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
+using CNAB.Domain.Test.common;
 using FluentAssertions;
 
 namespace CNAB.Domain.Test.Entities;
@@ -59,7 +60,7 @@ public class TransactionTest
     {
         // Arrange
         var store = new Store("Test Store", "John Doe");
-        var transaction = CreateValidTransaction(store);
+        var transaction = EntityTestFactory.CreateValidTransaction(store);
 
         // Act
         transaction.UpdateDetails(
@@ -83,7 +84,7 @@ public class TransactionTest
     {
         // Arrange
         var store = new Store("Test Store", "John Doe");
-        var transaction = CreateValidTransaction(store);
+        var transaction = EntityTestFactory.CreateValidTransaction(store);
 
         // Act
         var act = () => transaction.UpdateDetails(
@@ -100,100 +101,57 @@ public class TransactionTest
             .WithMessage("*must be greater than zero*");
     }
 
-    [Fact(DisplayName = "SignedAmount - Should return positive value when income Transaction")]
-    public void Transaction_SignedAmount_ShouldReturnPositiveValueWhenIncomeTransaction()
+    [Theory(DisplayName = "SignedAmount - Should return correct signed value")]
+    [InlineData(TransactionType.Debit, 100, 100)]
+    [InlineData(TransactionType.Credit, 200, 200)]
+    [InlineData(TransactionType.Sales, 150, 150)]
+    [InlineData(TransactionType.Bill, 120, -120)]
+    [InlineData(TransactionType.Financing, 80, -80)]
+    [InlineData(TransactionType.Rent, 50, -50)]
+    public void Transaction_SignedAmount_ShouldReturnCorrectValue(TransactionType type, decimal amount, decimal expectedSigned)
     {
         // Arrange
-        var store = new Store("Store", "Owner");
-        var transaction = new Transaction(
-            TransactionType.Credit,
-            DateTime.Now,
-            200m,
-            "12345678901",
-            "1234****5678",
-            TimeSpan.FromHours(12),
-            store
-        );
+        var store = EntityTestFactory.CreateStore();
+        var transaction = EntityTestFactory.CreateTransactionWithAmount(store, amount, type);
 
         // Act
         var signedAmount = transaction.SignedAmount;
 
         // Assert
-        signedAmount.Should().Be(200m);
+        signedAmount.Should().Be(expectedSigned);
     }
 
-    [Fact(DisplayName = "SignedAmount - Should return negative value when expense Transaction")]
-    public void Transaction_SignedAmount_ShouldReturnNegativeValueWhenExpenseTransaction()
+    [Theory(DisplayName = "IsIncome - Should return true for income transaction types")]
+    [InlineData(TransactionType.Debit)]
+    [InlineData(TransactionType.Credit)]
+    [InlineData(TransactionType.LoanReceipt)]
+    [InlineData(TransactionType.Sales)]
+    [InlineData(TransactionType.TEDReceipt)]
+    [InlineData(TransactionType.DOCReceipt)]
+    public void Transaction_IsIncome_ShouldBeTrue(TransactionType type)
     {
         // Arrange
-        var store = new Store("Store", "Owner");
-        var transaction = new Transaction(
-            TransactionType.Bill,
-            DateTime.Now,
-            120m,
-            "12345678901",
-            "1234****5678",
-            TimeSpan.FromHours(12),
-            store
-        );
+        var store = EntityTestFactory.CreateStore();
+        var transaction = EntityTestFactory.CreateTransactionWithAmount(store, 100, type);
 
-        // Act
-        var signedAmount = transaction.SignedAmount;
-
-        // Assert
-        signedAmount.Should().Be(-120m);
-    }
-
-    [Fact(DisplayName = "IsIncome - Should return true for income Transaction type")]
-    public void Transaction_IsIncome_ShouldReturnTrueForIncomeTransactionType()
-    {
-        // Arrange
-        var store = new Store("Store", "Owner");
-        var transaction = new Transaction(
-            TransactionType.Debit,
-            DateTime.Now,
-            99.99m,
-            "12345678901",
-            "1234****5678",
-            TimeSpan.FromHours(12),
-            store
-        );
-
-        // Assert
+        // Act + Assert
         transaction.IsIncome.Should().BeTrue();
         transaction.IsExpense.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "IsIncome - Should return true for non income Transaction type")]
-    public void Transaction_IsExpense_ShouldReturnTrueForNonIncomeTransactionType()
+    [Theory(DisplayName = "IsExpense - Should return true for expense transaction types")]
+    [InlineData(TransactionType.Bill)]
+    [InlineData(TransactionType.Financing)]
+    [InlineData(TransactionType.Rent)]
+    public void Transaction_IsExpense_ShouldBeTrue(TransactionType type)
     {
         // Arrange
-        var store = new Store("Store", "Owner");
-        var transaction = new Transaction(
-            TransactionType.Bill,
-            DateTime.Now,
-            60.00m,
-            "12345678901",
-            "1234****5678",
-            TimeSpan.FromHours(15),
-            store
-        );
+        var store = EntityTestFactory.CreateStore();
+        var transaction = EntityTestFactory.CreateTransactionWithAmount(store, 100, type);
 
-        // Assert
+        // Act + Assert
         transaction.IsExpense.Should().BeTrue();
         transaction.IsIncome.Should().BeFalse();
     }
-
-    private Transaction CreateValidTransaction(Store store)
-    {
-        return new Transaction(
-            TransactionType.Credit,
-            new DateTime(2024, 1, 1),
-            100.00m,
-            "12345678901",
-            "1234****5678",
-            new TimeSpan(12, 0, 0),
-            store
-        );
-    }
+    
 }

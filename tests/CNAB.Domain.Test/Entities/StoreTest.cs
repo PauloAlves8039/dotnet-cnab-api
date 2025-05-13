@@ -1,5 +1,6 @@
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
+using CNAB.Domain.Test.common;
 using FluentAssertions;
 
 namespace CNAB.Domain.Test.Entities;
@@ -43,7 +44,7 @@ public class StoreTest
     {
         // Arrange
         var store = new Store("Store 02", "Mary");
-        var transaction = CreateValidTransaction(store);
+        var transaction = EntityTestFactory.CreateValidTransaction(store);
 
         // Act
         store.AddTransaction(transaction);
@@ -57,7 +58,7 @@ public class StoreTest
     {
         // Arrange
         var store = new Store("Test Store", "Test Owner");
-        var transaction = CreateValidTransaction(store);
+        var transaction = EntityTestFactory.CreateValidTransaction(store);
 
         // Act
         Action act = () => store.AddTransaction(transaction);
@@ -66,23 +67,31 @@ public class StoreTest
         act.Should().NotThrow();
     }
 
-    [Fact(DisplayName = "GetBalance - Should return correct sum of signed amounts")]
-    public void Store_GetBalance_ShouldReturnCorrectSumOfSignedAmounts()
+    [Theory(DisplayName = "GetBalance - Should return correct balance for given transactions")]
+    [InlineData(TransactionType.Debit, 100, TransactionType.Bill, 50, 50)]
+    [InlineData(TransactionType.Credit, 200, TransactionType.Financing, 100, 100)]
+    [InlineData(TransactionType.Rent, 300, TransactionType.Rent, 200, -500)]
+    [InlineData(TransactionType.Sales, 150, TransactionType.DOCReceipt, 150, 300)]
+    [InlineData(TransactionType.Bill, 70, TransactionType.Bill, 30, -100)]
+    public void Store_GetBalance_ShouldReturnCorrectSignedBalance(
+        TransactionType type1, decimal amount1,
+        TransactionType type2, decimal amount2,
+        decimal expectedBalance)
     {
         // Arrange
         var store = new Store("Test Store", "Test Owner");
 
-        var test1 = CreateTransactionWithAmount(store, 100m, TransactionType.Debit);
-        var test2 = CreateTransactionWithAmount(store, 50m, TransactionType.Bill);
+        var _typet1 = EntityTestFactory.CreateTransactionWithAmount(store, amount1, type1);
+        var _typet2 = EntityTestFactory.CreateTransactionWithAmount(store, amount2, type2);
 
-        store.AddTransaction(test1);
-        store.AddTransaction(test2);
+        store.AddTransaction(_typet1);
+        store.AddTransaction(_typet2);
 
         // Act
         var balance = store.GetBalance();
 
         // Assert
-        balance.Should().Be(50);
+        balance.Should().Be(expectedBalance);
     }
 
     [Fact(DisplayName = "GetBalance - Should return zero when no Transactions")]
@@ -125,31 +134,5 @@ public class StoreTest
         act.Should()
             .Throw<Exception>()
             .WithMessage("*Invalid name*");
-    }
-
-
-    private Transaction CreateValidTransaction(Store store)
-    {
-        return new Transaction(
-            TransactionType.Credit,
-            DateTime.Now,
-            100.00m,
-            "12345678901",
-            "1234****5678",
-            new TimeSpan(14, 30, 0),
-            store
-        );
-    }
-
-    private Transaction CreateTransactionWithAmount(Store store, decimal amount, TransactionType type)
-    {
-        return new Transaction(
-            type,
-            DateTime.Now.Date,
-            amount,
-            "12345678901",
-            "1234****5678",
-            TimeSpan.FromHours(12),
-            store);
     }
 }

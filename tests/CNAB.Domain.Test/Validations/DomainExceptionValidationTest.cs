@@ -5,7 +5,7 @@ namespace CNAB.Domain.Test.Validations;
 
 public class DomainExceptionValidationTest
 {
-    [Fact(DisplayName = "GetErrors - No Errors No Exception Thrown")]
+    [Fact(DisplayName = "GetErrors - No errors no exception thrown")]
     public void DomainExceptionValidation_GetErrors_NoErrorsNoExceptionThrown()
     {
         // Arrange
@@ -19,7 +19,7 @@ public class DomainExceptionValidationTest
         action.Should().NotThrow();
     }
 
-    [Fact(DisplayName = "GetErrors - Errors Domain Exception Thrown")]
+    [Fact(DisplayName = "GetErrors - Errors domain exception thrown")]
     public void DomainExceptionValidation_GetErrors_ErrorsDomainExceptionThrown()
     {
         // Arrange
