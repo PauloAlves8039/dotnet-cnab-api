@@ -36,4 +36,42 @@ public static class EntityTestFactory
             TimeSpan.FromHours(12),
             store);
     }
+
+    public static List<Transaction> GenerateMockTransactions()
+    {
+        return new List<Transaction>
+    {
+        new Transaction(
+            Guid.Parse("fbdeb885-f1bf-4551-9eb8-6431d13e380d"),
+            TransactionType.Debit,
+            DateTime.Now,
+            1000.00m,
+            "12345678901",
+            "1234****5678",
+            TimeSpan.FromHours(11),
+            new Store("Store 1", "Location 1")
+        ),
+        new Transaction(
+            Guid.Parse("1368323a-8608-4084-ab5e-99e0b1ccfa9b"), 
+            TransactionType.Credit,
+            DateTime.Now,
+            2000.00m,
+            "98765432100",
+            "1234****5678",
+            TimeSpan.FromHours(12),
+            new Store("Store 2", "Location 2")
+        ),
+        new Transaction(
+            Guid.Parse("743e5c25-a3da-477d-adcf-fb7fdc1ac64a"), 
+            TransactionType.Credit,
+            DateTime.Now,
+            3000.00m,
+            "98765432100",
+            "1234****5678",
+            TimeSpan.FromHours(13),
+            new Store("Store 3", "Location 3")
+        )
+    };
+    }
+
 }
