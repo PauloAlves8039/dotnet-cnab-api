@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4EE59B55-4256-4AA6-89C2-74512FD2F52C}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.Application", "src\CNAB.Application\CNAB.Application.csproj", "{316C98F2-5597-4CB1-A8F6-0CD90B012F48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.WebAPI", "src\CNAB.WebAPI\CNAB.WebAPI.csproj", "{CDB04A22-E651-49E3-B7A5-64E80F819502}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{54BB62FC-7EAD-4131-A3D6-AD7672ADF7CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.Domain.Test", "tests\CNAB.Domain.Test\CNAB.Domain.Test.csproj", "{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +53,10 @@ Global
 		{CDB04A22-E651-49E3-B7A5-64E80F819502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDB04A22-E651-49E3-B7A5-64E80F819502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDB04A22-E651-49E3-B7A5-64E80F819502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,5 +71,6 @@ Global
 		{B1B5B4E9-16BA-4554-8EBA-D79419A0F6AF} = {F6CFA239-493E-492A-8C45-EEBD8C4E8FB0}
 		{316C98F2-5597-4CB1-A8F6-0CD90B012F48} = {F1E23C70-B429-45FE-BF90-FDBBAB50AF2C}
 		{CDB04A22-E651-49E3-B7A5-64E80F819502} = {E5834D57-45A7-4A14-863E-73C7883262F8}
+		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF} = {54BB62FC-7EAD-4131-A3D6-AD7672ADF7CF}
 	EndGlobalSection
 EndGlobal
