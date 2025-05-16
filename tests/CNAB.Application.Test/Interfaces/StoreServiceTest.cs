@@ -1,253 +1,267 @@
 using CNAB.Application.DTOs;
-using CNAB.Application.Interfaces;
 using CNAB.Application.Services;
+using CNAB.Application.Test.Common;
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
 using CNAB.Domain.Interfaces;
+using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
-namespace CNAB.Application.Test.Interfaces
+namespace CNAB.Application.Test.Services;
+
+public class StoreServiceTest
 {
-    public class StoreServiceTest
+    private readonly Mock<IStoreRepository> _mockStoreRepository;
+    private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<ILogger<StoreService>> _mockLogger;
+    private readonly StoreService _storeService;
+
+    public StoreServiceTest()
     {
-        private readonly Mock<IStoreRepository> _mockStoreRepository;
-        private readonly Mock<ILogger<StoreService>> _mockLogger;
-        private readonly IStoreService _storeService;
+        _mockStoreRepository = new Mock<IStoreRepository>();
+        _mockMapper = new Mock<IMapper>();
+        _mockLogger = new Mock<ILogger<StoreService>>();
+        _storeService = new StoreService(_mockStoreRepository.Object, _mockMapper.Object, _mockLogger.Object);
+    }
 
-        public StoreServiceTest()
-        {
-            _mockStoreRepository = new Mock<IStoreRepository>();
-            _mockLogger = new Mock<ILogger<StoreService>>();
-            _storeService = new StoreService(_mockStoreRepository.Object, null, _mockLogger.Object);
-        }
+    [Fact(DisplayName = "GetAllStoreAsync - Should return all Stores")]
+    public async Task StoreService_GetAllStoreAsync_ShouldReturnAllStores()
+    {
+        // Arrange
+        var stores = ServiceTestFactory.GenerateMockStores();
+        stores[0].AddTransaction(new Transaction(TransactionType.Credit, DateTime.Now, 500m, "12345678901", "1234", TimeSpan.Zero, stores[0]));
+        stores[1].AddTransaction(new Transaction(TransactionType.Debit, DateTime.Now, 200m, "12345678901", "1234", TimeSpan.Zero, stores[1]));
+        _mockStoreRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(stores);
 
-        List<StoreDto> listStores = new List<StoreDto>
-        {
-            new StoreDto
-            {
-                Id = Guid.Parse("b3cfa2d3-1d4e-4c5b-9b87-89e2c8691c0a"),
-                Name = "Store A",
-                OwnerName = "Owner A",
-                Balance = 1500.75m
-            },
-            new StoreDto
-            {
-                Id = Guid.Parse("f4d8b6be-240d-4a5e-9a2f-87b45d2c8d27"),
-                Name = "Store B",
-                OwnerName = "Owner B",
-                Balance = 2450.50m
-            },
-            new StoreDto
-            {
-                Id = Guid.Parse("a6b3c9f3-7d8f-4c2e-9e3a-8b5d6c7e2f8b"),
-                Name = "Store C",
-                OwnerName = "Owner C",
-                Balance = 3200.00m
-            }
-        };
+        // Act
+        var result = await _storeService.GetAllStoreAsync();
 
-        [Fact(DisplayName = "GetAllStoreAsync - Should return all Stores")]
-        public async Task StoreService_GetAllStoreAsync_ShouldReturnAllStores()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            mockStoreService.Setup(service => service.GetAllStoreAsync()).ReturnsAsync(listStores);
-            var storeService = mockStoreService.Object;
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(stores.Count, result.Count());
+        Assert.Equal(stores[0].Name, result.ElementAt(0).Name);
+        Assert.Equal(stores[0].GetBalance(), result.ElementAt(0).Balance);
+    }
 
-            // Act
-            var result = await storeService.GetAllStoreAsync();
+    [Fact(DisplayName = "GetAllStoreAsync - Should return empty list when no Stores exist")]
+    public async Task StoreService_GetAllStoreAsync_ShouldReturnEmptyListWhenNoStoresExist()
+    {
+        // Arrange
+        _mockStoreRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Store>());
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(listStores.Count, result.Count());
-        }
+        // Act
+        var result = await _storeService.GetAllStoreAsync();
 
-        [Fact(DisplayName = "GetAllStoreAsync - Should return empty list when no Stores exist")]
-        public async Task StoreService_GetAllStoreAsync_ShouldReturnEmptyListWhenNoStoresExist()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var emptyStores = new List<StoreDto>();
-            mockStoreService.Setup(service => service.GetAllStoreAsync()).ReturnsAsync(emptyStores);
-            var categoryService = mockStoreService.Object;
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
 
-            // Act
-            var result = await categoryService.GetAllStoreAsync();
+    [Fact(DisplayName = "GetByIdStoreAsync - Should return StoreDto when id exists")]
+    public async Task StoreService_GetByIdStoreAsync_ShouldReturnStoreDtoWhenIdExists()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        var store = new Store(storeId, "Store D", "Owner D");
+        store.AddTransaction(new Transaction(TransactionType.Credit, DateTime.Now, 100m, "12345678901", "1234", TimeSpan.Zero, store));
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
-        }
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync(store);
 
-        [Fact(DisplayName = "GetByIdStoreAsync - Should return StoreDto when id exists")]
-        public async Task StoreService_GetByIdStoreAsync_ShouldReturnStoreDtoWhenIdExists()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("60935a54-a295-40b8-a2c3-b6a32a466174");
-            var storeDto = new StoreDto { Id = storeId, Name = "Store D", OwnerName = "Owner D", Balance = 4600.00m };
-            mockStoreService.Setup(service => service.GetByIdStoreAsync(storeId)).ReturnsAsync(storeDto);
-            var storeService = mockStoreService.Object;
+        // Act
+        var result = await _storeService.GetByIdStoreAsync(storeId);
 
-            // Act
-            var result = await storeService.GetByIdStoreAsync(storeId);
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(storeId, result.Id);
+        Assert.Equal(store.Name, result.Name);
+        Assert.Equal(store.OwnerName, result.OwnerName);
+        Assert.Equal(store.GetBalance(), result.Balance);
+    }
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(storeId, result.Id);
-        }
+    [Fact(DisplayName = "GetByIdStoreAsync - Should return null when StoreDto Id does not exist")]
+    public async Task StoreService_GetByIdStoreAsync_ShouldReturnNullWhenStoreDtoIdDoesNotExist()
+    {
+        // Arrange
+        var invalidStoreId = Guid.NewGuid();
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(invalidStoreId)).ReturnsAsync((Store)null);
 
-        [Fact(DisplayName = "GetByIdStoreAsync - Should return null when StoreDto Id does not exist")]
-        public async Task StoreService_GetByIdStoreAsync_ShouldReturnNullWhenStoreDtoIdDoesNotExist()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var invalidStoreId = Guid.Parse("0a0a0a0a-0a0a-0a0a-0a0a-0a0a0a0a0a0a"); ;
-            mockStoreService.Setup(service => service.GetByIdStoreAsync(invalidStoreId)).ReturnsAsync((StoreDto)null);
-            var storeService = mockStoreService.Object;
+        // Act
+        var result = await _storeService.GetByIdStoreAsync(invalidStoreId);
 
-            // Act
-            var result = await storeService.GetByIdStoreAsync(invalidStoreId);
+        // Assert
+        Assert.Null(result);
 
-            // Assert
-            Assert.Null(result);
-        }
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Store not found")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
 
-        [Fact(DisplayName = "AddStoreAsync - Should insert StoreInputDto and return added StoreDto")]
-        public async Task StoreService_AddStoreAsync_ShouldInsertStoreInputDtoAndReturnAddedStoreDto()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("60935a54-a295-40b8-a2c3-b6a32a466174");
-            var storeInputDto = new StoreInputDto { Id = storeId, Name = "Store D", OwnerName = "Owner D" };
-            mockStoreService.Setup(service => service.AddStoreAsync(storeInputDto)).Verifiable();
-            var storeService = mockStoreService.Object;
+    [Fact(DisplayName = "AddStoreAsync - Should insert StoreInputDto and return StoreDto")]
+    public async Task StoreService_AddStoreAsync_ShouldInsertStoreInputDtoAndReturnStoreDto()
+    {
+        // Arrange
+        var storeInputDto = ServiceTestFactory.CreateStoreInputDto();
+        var expectedStore = new Store(storeInputDto.Name, storeInputDto.OwnerName);
+        var expectedStoreDto = ServiceTestFactory.CreateStoreDto(expectedStore.Id, expectedStore.Name, expectedStore.OwnerName);
+        _mockMapper.Setup(mapper => mapper.Map<StoreDto>(It.IsAny<Store>())).Returns(expectedStoreDto);
 
-            // Act
-            await storeService.AddStoreAsync(storeInputDto);
+        // Act
+        var result = await _storeService.AddStoreAsync(storeInputDto);
 
-            // Assert
-            mockStoreService.Verify();
-        }
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedStoreDto.Name, result.Name);
+        Assert.Equal(expectedStoreDto.OwnerName, result.OwnerName);
 
-        [Fact(DisplayName = "AddStoreAsync - Should return null when added StoreInputDto fails")]
-        public async Task StoreService_AddStoreAsync_ShouldReturnNullWhenAddedStoreInputDtoFails()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("0a0a0a0a-0a0a-0a0a-0a0a-0a0a0a0a0a0a");
-            var storeInputDto = new StoreInputDto { Id = storeId, Name = null, OwnerName = null };
-            mockStoreService.Setup(service => service.AddStoreAsync(storeInputDto))
-                .ThrowsAsync(new InvalidOperationException("Livros"));
-            var storeService = mockStoreService.Object;
+        _mockStoreRepository.Verify(repo => repo.AddAsync(It.Is<Store>(s =>
+            s.Name == storeInputDto.Name &&
+            s.OwnerName == storeInputDto.OwnerName)),
+            Times.Once);
+    }
 
-            // Act
-            Func<Task> act = async () => await storeService.AddStoreAsync(storeInputDto);
+    [Fact(DisplayName = "AddStoreAsync - Should return null when mapper returns null")]
+    public async Task StoreService_AddStoreAsync_ShouldReturnNullWhenMapperReturnsNull()
+    {
+        // Arrange
+        var storeInputDto = ServiceTestFactory.CreateStoreInputDto();
+        _mockMapper.Setup(mapper => mapper.Map<StoreDto>(It.IsAny<Store>())).Returns((StoreDto)null);
 
-            // Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
-            mockStoreService.Verify(service => service.AddStoreAsync(storeInputDto), Times.Once);
-        }
+        // Act
+        var result = await _storeService.AddStoreAsync(storeInputDto);
 
-        [Fact(DisplayName = "UpdateStoreAsync - Should update return updated StoreInputDto")]
-        public async Task StoreService_UpdateStoreAsync_ShouldUpdateReturnUpdatedStoreInputDto()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("a6b3c9f3-7d8f-4c2e-9e3a-8b5d6c7e2f8b");
-            var updatedStoreInputDto = new StoreInputDto { Id = storeId, Name = "Store 3", OwnerName = "Owner 3" };
-            mockStoreService.Setup(service => service.UpdateStoreAsync(updatedStoreInputDto)).Verifiable();
-            var storeService = mockStoreService.Object;
+        // Assert
+        Assert.Null(result);
 
-            // Act
-            await storeService.UpdateStoreAsync(updatedStoreInputDto);
+        _mockStoreRepository.Verify(repo => repo.AddAsync(It.IsAny<Store>()), Times.Once);
+    }
 
-            // Assert
-            mockStoreService.Verify();
-        }
+    [Fact(DisplayName = "UpdateStoreAsync - Should update and return updated StoreDto")]
+    public async Task StoreService_UpdateStoreAsync_ShouldUpdateAndReturnUpdatedStoreDto()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        var existingStore = new Store(storeId, "Original Store", "Original Owner");
+        var storeInputDto = ServiceTestFactory.UpdateStoreInputDto(storeId);
+        var expectedStoreDto = ServiceTestFactory.CreateStoreDto(storeId, storeInputDto.Name, storeInputDto.OwnerName);
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync(existingStore);
+        _mockMapper.Setup(mapper => mapper.Map<StoreDto>(It.IsAny<Store>())).Returns(expectedStoreDto);
 
-        [Fact(DisplayName = "UpdateStoreAsync - Should return null when StoreInputDto not found")]
-        public async Task StoreService_UpdateStoreAsync_ShouldReturnNullWhenStoreInputDtoNotFound()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("0a0a0a0a-0a0a-0a0a-0a0a-0a0a0a0a0a0a");
-            var invalidStoreInputDto = new StoreInputDto { Id = storeId, Name = null, OwnerName = null };
-            mockStoreService.Setup(service => service.UpdateStoreAsync(invalidStoreInputDto))
-                .ThrowsAsync(new InvalidOperationException("Invalid Store update"));
-            var storeService = mockStoreService.Object;
+        // Act
+        var result = await _storeService.UpdateStoreAsync(storeInputDto);
 
-            // Act
-            Func<Task> act = async () => await storeService.UpdateStoreAsync(invalidStoreInputDto);
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedStoreDto.Id, result.Id);
+        Assert.Equal(expectedStoreDto.Name, result.Name);
+        Assert.Equal(expectedStoreDto.OwnerName, result.OwnerName);
 
-            // Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
-        }
+        _mockStoreRepository.Verify(repo => repo.UpdateAsync(It.Is<Store>(s =>
+            s.Id == storeId &&
+            s.Name == storeInputDto.Name &&
+            s.OwnerName == storeInputDto.OwnerName)),
+            Times.Once);
+    }
 
-        [Fact(DisplayName = "DeleteStoreAsync - Should remove Store and return removed Store")]
-        public async Task CategoryService_DeleteStoreAsync_ShouldRemoveStoreAndReturnRemovedStore()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var storeId = Guid.Parse("60935a54-a295-40b8-a2c3-b6a32a466174");
-            mockStoreService.Setup(service => service.DeleteStoreAsync(storeId)).Verifiable();
-            var storeService = mockStoreService.Object;
+    [Fact(DisplayName = "UpdateStoreAsync - Should return null when Store not found")]
+    public async Task StoreService_UpdateStoreAsync_ShouldReturnNullWhenStoreNotFound()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        var storeInputDto = ServiceTestFactory.UpdateStoreInputDto(storeId);
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync((Store)null);
 
-            // Act
-            await storeService.DeleteStoreAsync(storeId);
+        // Act
+        var result = await _storeService.UpdateStoreAsync(storeInputDto);
 
-            // Assert
-            mockStoreService.Verify();
-        }
+        // Assert
+        Assert.Null(result);
 
-        [Fact(DisplayName = "DeleteStoreAsync - Should return null when Store not found")]
-        public async Task CategoryService_DeleteStoreAsync_ShouldReturnNullWhenStoreNotFound()
-        {
-            // Arrange
-            var mockStoreService = new Mock<IStoreService>();
-            var invalidStoreId = Guid.Parse("0a0a0a0a-0a0a-0a0a-0a0a-0a0a0a0a0a0a");
-            mockStoreService.Setup(service => service.DeleteStoreAsync(invalidStoreId))
-                .ThrowsAsync(new InvalidOperationException("Invalid Store removal"));
-            var storeService = mockStoreService.Object;
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Store not found")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
 
-            // Act
-            Func<Task> act = async () => await storeService.DeleteStoreAsync(invalidStoreId);
+        _mockStoreRepository.Verify(repo => repo.UpdateAsync(It.IsAny<Store>()), Times.Never);
+    }
 
-            // Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
-        }
+    [Fact(DisplayName = "DeleteStoreAsync - Should delete Store when exists")]
+    public async Task StoreService_DeleteStoreAsync_ShouldDeleteStoreWhenExists()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        var existingStore = new Store(storeId, "Store to Delete", "Owner");
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync(existingStore);
 
-        [Fact(DisplayName = "GetStoreBalanceAsync - Should return correct balance when Store exists")]
-        public async Task CategoryService_GetStoreBalanceAsync_ShouldReturnCorrectBalanceWhenStoreExists()
-        {
-            // Arrange
-            var storeId = Guid.NewGuid();
-            var store = new Store("StoreName", "OwnerName");
-            store.AddTransaction(new Transaction(TransactionType.Debit, DateTime.Now, 100m, "12345678901", "1234", TimeSpan.Zero, store));
-            store.AddTransaction(new Transaction(TransactionType.Credit, DateTime.Now, 50m, "12345678901", "1234", TimeSpan.Zero, store));
-            _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync(store);
+        // Act
+        await _storeService.DeleteStoreAsync(storeId);
 
-            // Act
-            var balance = await _storeService.GetStoreBalanceAsync(storeId);
+        // Assert
+        _mockStoreRepository.Verify(repo => repo.DeleteAsync(storeId), Times.Once);
+    }
 
-            // Assert
-            Assert.Equal(150m, balance);
-        }
+    [Fact(DisplayName = "DeleteStoreAsync - Should log error when Store not found")]
+    public async Task StoreService_DeleteStoreAsync_ShouldLogErrorWhenStoreNotFound()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync((Store)null);
 
-        [Fact(DisplayName = "GetStoreBalanceAsync - Should return zero when Store does not exist")]
-        public async Task GetStoreBalanceAsync_ShouldReturnZeroWhenStoreDoesNotExist()
-        {
-            // Arrange
-            var storeId = Guid.NewGuid();
-            _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync((Store)null);
+        // Act
+        await _storeService.DeleteStoreAsync(storeId);
 
-            // Act
-            var balance = await _storeService.GetStoreBalanceAsync(storeId);
+        // Assert
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Store not found")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
 
-            // Assert
-            Assert.Equal(0m, balance);
-        }
+        _mockStoreRepository.Verify(repo => repo.DeleteAsync(storeId), Times.Once);
+    }
+
+    [Fact(DisplayName = "GetStoreBalanceAsync - Should return correct balance when Store exists")]
+    public async Task StoreService_GetStoreBalanceAsync_ShouldReturnCorrectBalanceWhenStoreExists()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        var store = new Store(storeId, "Test Store", "Test Owner");
+        store.AddTransaction(new Transaction(TransactionType.Credit, DateTime.Now, 150m, "12345678901", "1234", TimeSpan.Zero, store));
+        store.AddTransaction(new Transaction(TransactionType.Debit, DateTime.Now, 50m, "12345678901", "1234", TimeSpan.Zero, store));
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync(store);
+
+        // Act
+        var expected = 200m;
+        var result = await _storeService.GetStoreBalanceAsync(storeId);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact(DisplayName = "GetStoreBalanceAsync - Should return zero when Store does not exist")]
+    public async Task StoreService_GetStoreBalanceAsync_ShouldReturnZeroWhenStoreDoesNotExist()
+    {
+        // Arrange
+        var storeId = Guid.NewGuid();
+        _mockStoreRepository.Setup(repo => repo.GetByIdAsync(storeId)).ReturnsAsync((Store)null);
+
+        // Act
+        var expected = 0m;
+        var result = await _storeService.GetStoreBalanceAsync(storeId);
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }
