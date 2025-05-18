@@ -16,6 +16,16 @@ public static class ServiceTestFactory
         };
     }
 
+    public static Store CreateStore(string name, string ownerName)
+    {
+        return new Store(name, ownerName);
+    }
+
+    public static Store CreateStore()
+    {
+        return new Store("JOHN'S Bar", "JOHN DOE");
+    }
+
     public static StoreInputDto CreateStoreInputDto()
     {
         return new StoreInputDto
@@ -44,6 +54,21 @@ public static class ServiceTestFactory
             OwnerName = ownerName,
             Balance = 0m
         };
+    }
+
+    public static Transaction CreateTransaction()
+    {
+        var store = CreateStore();
+
+        return new Transaction(
+            type: TransactionType.Debit,
+            occurrenceDate: new DateTime(2019, 3, 1, 15, 34, 53),
+            amount: 142.00m,
+            cpf: "00962067601",
+            cardNumber: "74753****3153",
+            time: new TimeSpan(15, 34, 53),
+            store: store
+        );
     }
 
     public static Transaction CreateTransaction(Guid id)
@@ -112,5 +137,22 @@ public static class ServiceTestFactory
         };
 
         return transactionDto;
+    }
+
+    public static string GetValidCnabLinePadded()
+    {
+        return GetValidCnabLine().PadRight(81, ' ');
+    }
+
+    public static string GetValidCnabLine()
+    {
+        return "1" +
+               "20190301" +
+               "0000014200" +
+               "00962067601" +
+               "74753****315" +
+               "153453" +
+               "JOHN DOE      " +      
+               "JOHN'S Bar         "; 
     }
 }
