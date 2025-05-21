@@ -1,8 +1,10 @@
 using CNAB.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CNAB.WebAPI.Controllers;
 
+[Authorize(AuthenticationSchemes = "Bearer")]
 [ApiController]
 [Route("[controller]")]
 public class CNABController : ControllerBase
@@ -20,7 +22,9 @@ public class CNABController : ControllerBase
     public async Task<IActionResult> UploadCNABFile(IFormFile file)
     {
         if (file == null || file.Length == 0)
+        {
             return BadRequest("Invalid file.");
+        }
 
         using var stream = new StreamReader(file.OpenReadStream());
         var lines = new List<string>();
