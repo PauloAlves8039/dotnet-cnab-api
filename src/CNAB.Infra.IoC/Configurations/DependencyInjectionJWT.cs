@@ -34,7 +34,7 @@ public static class DependencyInjectionJWT
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("DeletePermission", policy =>
+            options.AddPolicy("AdminAccess", policy =>
                 policy.RequireClaim("DeletePermission", "true"));
         });
 
