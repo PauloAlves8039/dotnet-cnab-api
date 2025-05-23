@@ -1,7 +1,7 @@
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
 using CNAB.Domain.Interfaces;
-using CNAB.Domain.Test.common;
+using CNAB.Domain.Test.Common;
 using CNAB.Domain.Validations;
 using Moq;
 
