@@ -1,7 +1,7 @@
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
 
-namespace CNAB.Domain.Test.common;
+namespace CNAB.Domain.Test.Common;
 
 public static class EntityTestFactory
 {
