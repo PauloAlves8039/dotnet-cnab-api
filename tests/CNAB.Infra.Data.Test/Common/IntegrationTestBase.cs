@@ -1,32 +1,28 @@
 using CNAB.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace CNAB.Infra.Data.Test.Common;
 
 public class IntegrationTestBase : IDisposable
 {
     protected readonly ApplicationDbContext DbContext;
+    private readonly string _databaseName;
 
     public IntegrationTestBase()
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Test.json")
-            .Build();
-
+        _databaseName = Guid.NewGuid().ToString();
+        
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+            .UseInMemoryDatabase(databaseName: _databaseName)
             .Options;
 
         DbContext = new ApplicationDbContext(options);
-
-        DbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE \"Transactions\" RESTART IDENTITY CASCADE;");
-        DbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE \"Stores\" RESTART IDENTITY CASCADE;");
+        DbContext.Database.EnsureCreated();
     }
 
     public void Dispose()
     {
+        DbContext.Database.EnsureDeleted();
         DbContext.Dispose();
     }
 }
