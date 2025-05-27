@@ -2,7 +2,13 @@ using CNAB.Domain.Entities;
 
 namespace CNAB.Domain.Interfaces;
 
-public interface IStoreRepository : IRepository<Store> 
+public interface IStoreRepository
 {
-    Task<Store> GetByNameAsync(string storeName);
+    Task<IEnumerable<Store>> GetAllStores();
+    Task<Store> GetStoreById(Guid id);
+    Task<Store> GetStoreByName(string storeName);
+    Task<Store> AddStore(Store Store);
+    Task<Store> UpdateStore(Store Store);
+    Task DeleteStore(Guid id);
+
 }
