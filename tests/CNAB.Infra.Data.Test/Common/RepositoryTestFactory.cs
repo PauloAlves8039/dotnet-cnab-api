@@ -10,6 +10,17 @@ public static class RepositoryTestFactory
         return new Store(name, owner);
     }
 
+    public static List<Store> GenerateListStores()
+    {
+        return new List<Store>
+    {
+        new Store("Store 1", "Owner 1"),
+        new Store("Store 2", "Owner 2"),
+        new Store("Store 3", "Owner 3")
+    };
+    }
+
+
     public static Transaction CreateTransaction(Store store = null)
     {
         store ??= CreateStore();

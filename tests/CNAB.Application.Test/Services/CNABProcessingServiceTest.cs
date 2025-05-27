@@ -49,9 +49,9 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var lines = new List<string> { ValidLinePadded, ValidLinePadded };
-            _transactionRepoMock.Setup(r => r.AddAsync(It.IsAny<Transaction>())).ReturnsAsync((Transaction t) => t);
-            _storeRepoMock.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync((Store)null);
-            _storeRepoMock.Setup(r => r.AddAsync(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
+            _transactionRepoMock.Setup(r => r.AddTransaction(It.IsAny<Transaction>())).ReturnsAsync((Transaction t) => t);
+            _storeRepoMock.Setup(r => r.GetStoreByName(It.IsAny<string>())).ReturnsAsync((Store)null);
+            _storeRepoMock.Setup(r => r.AddStore(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
 
             // Act
             var result = await _service.ParseCNABAsync(lines);
@@ -81,16 +81,16 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var lines = new List<string> { ValidLinePadded, ValidLinePadded };
-            _transactionRepoMock.Setup(r => r.AddAsync(It.IsAny<Transaction>())).ReturnsAsync((Transaction t) => t);
-            _storeRepoMock.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync((Store)null);
-            _storeRepoMock.Setup(r => r.AddAsync(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
+            _transactionRepoMock.Setup(r => r.AddTransaction(It.IsAny<Transaction>())).ReturnsAsync((Transaction t) => t);
+            _storeRepoMock.Setup(r => r.GetStoreByName(It.IsAny<string>())).ReturnsAsync((Store)null);
+            _storeRepoMock.Setup(r => r.AddStore(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
 
             // Act
             var processed = await _service.ProcessValidLinesAsync(lines);
 
             // Assert
             Assert.Equal(2, processed);
-            _transactionRepoMock.Verify(r => r.AddAsync(It.IsAny<Transaction>()), Times.Exactly(2));
+            _transactionRepoMock.Verify(r => r.AddTransaction(It.IsAny<Transaction>()), Times.Exactly(2));
         }
 
         [Fact(DisplayName = "ProcessValidLinesAsync - Should return zero when list is empty")]
@@ -111,9 +111,9 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var lines = new List<string> { ValidLinePadded };
-            _transactionRepoMock.Setup(r => r.AddAsync(It.IsAny<Transaction>())).ThrowsAsync(new Exception("DB error"));
-            _storeRepoMock.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync((Store)null);
-            _storeRepoMock.Setup(r => r.AddAsync(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
+            _transactionRepoMock.Setup(r => r.AddTransaction(It.IsAny<Transaction>())).ThrowsAsync(new Exception("DB error"));
+            _storeRepoMock.Setup(r => r.GetStoreByName(It.IsAny<string>())).ReturnsAsync((Store)null);
+            _storeRepoMock.Setup(r => r.AddStore(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
 
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.ProcessValidLinesAsync(lines));
@@ -123,8 +123,8 @@ namespace CNAB.Application.Test.Services
         public async Task CNABProcessingService_ParseLineAsync_ShouldParseValidLineToTransaction()
         {
             // Arrange
-            _storeRepoMock.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync((Store)null);
-            _storeRepoMock.Setup(r => r.AddAsync(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
+            _storeRepoMock.Setup(r => r.GetStoreByName(It.IsAny<string>())).ReturnsAsync((Store)null);
+            _storeRepoMock.Setup(r => r.AddStore(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
 
             // Act
             var transaction = await _service.ParseLineAsync(ValidLinePadded);
@@ -151,15 +151,15 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var store = ServiceTestFactory.CreateStore();
-            _storeRepoMock.Setup(r => r.GetByNameAsync(store.Name)).ReturnsAsync(store);
+            _storeRepoMock.Setup(r => r.GetStoreByName(store.Name)).ReturnsAsync(store);
 
             // Act
             var result = await _service.GetOrCreateStoreAsync(store.Name, store.OwnerName);
 
             // Assert
             Assert.Equal(store, result);
-            _storeRepoMock.Verify(r => r.GetByNameAsync(store.Name), Times.Once);
-            _storeRepoMock.Verify(r => r.AddAsync(It.IsAny<Store>()), Times.Never);
+            _storeRepoMock.Verify(r => r.GetStoreByName(store.Name), Times.Once);
+            _storeRepoMock.Verify(r => r.AddStore(It.IsAny<Store>()), Times.Never);
         }
 
         [Fact(DisplayName = "GetOrCreateStoreAsync - Should create Store when not found")]
@@ -168,8 +168,8 @@ namespace CNAB.Application.Test.Services
             // Arrange
             var storeName = "Loja Nova";
             var ownerName = "Dono Novo";
-            _storeRepoMock.Setup(r => r.GetByNameAsync(storeName)).ReturnsAsync((Store)null);
-            _storeRepoMock.Setup(r => r.AddAsync(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
+            _storeRepoMock.Setup(r => r.GetStoreByName(storeName)).ReturnsAsync((Store)null);
+            _storeRepoMock.Setup(r => r.AddStore(It.IsAny<Store>())).ReturnsAsync((Store s) => s);
 
             // Act
             var result = await _service.GetOrCreateStoreAsync(storeName, ownerName);
@@ -178,7 +178,7 @@ namespace CNAB.Application.Test.Services
             Assert.NotNull(result);
             Assert.Equal(storeName, result.Name);
             Assert.Equal(ownerName, result.OwnerName);
-            _storeRepoMock.Verify(r => r.AddAsync(It.IsAny<Store>()), Times.Once);
+            _storeRepoMock.Verify(r => r.AddStore(It.IsAny<Store>()), Times.Once);
         }
 
         [Fact(DisplayName = "SaveTransactionAsync - Should call AddAsync on repository")]
@@ -186,13 +186,13 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var transaction = ServiceTestFactory.CreateTransaction();
-            _transactionRepoMock.Setup(r => r.AddAsync(transaction)).ReturnsAsync(transaction);
+            _transactionRepoMock.Setup(r => r.AddTransaction(transaction)).ReturnsAsync(transaction);
 
             // Act
             await _service.SaveTransactionAsync(transaction);
 
             // Assert
-            _transactionRepoMock.Verify(r => r.AddAsync(transaction), Times.Once);
+            _transactionRepoMock.Verify(r => r.AddTransaction(transaction), Times.Once);
         }
 
         [Fact(DisplayName = "SaveTransactionAsync - Should ignore null transaction without throwing")]
@@ -207,7 +207,7 @@ namespace CNAB.Application.Test.Services
         {
             // Arrange
             var transaction = ServiceTestFactory.CreateTransaction();
-            _transactionRepoMock.Setup(r => r.AddAsync(transaction)).ThrowsAsync(new Exception("DB error"));
+            _transactionRepoMock.Setup(r => r.AddTransaction(transaction)).ThrowsAsync(new Exception("DB error"));
 
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.SaveTransactionAsync(transaction));
