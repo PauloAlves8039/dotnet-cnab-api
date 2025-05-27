@@ -77,12 +77,12 @@ public class CNABProcessingService : ICNABProcessingService
 
     public async Task<Store> GetOrCreateStoreAsync(string storeName, string owner)
     {
-        var store = await _storeRepository.GetByNameAsync(storeName);
+        var store = await _storeRepository.GetStoreByName(storeName);
 
         if (store == null)
         {
             store = new Store(storeName, owner);
-            await _storeRepository.AddAsync(store);
+            await _storeRepository.AddStore(store);
         }
 
         return store;
@@ -90,7 +90,7 @@ public class CNABProcessingService : ICNABProcessingService
 
     public async Task SaveTransactionAsync(Transaction transaction)
     {
-        await _transactionRepository.AddAsync(transaction);
+        await _transactionRepository.AddTransaction(transaction);
     }
 
     public Task<(List<string> validLines, List<string> invalidLines)> ValidateLinesAsync(IEnumerable<string> lines)
