@@ -47,7 +47,7 @@ public class TransactionServiceTest
             ServiceTestFactory.CreateTransactionDto(transactions[1].Id)
         };
 
-        _transactionRepositoryMock.Setup(repo => repo.GetAllAsync())
+        _transactionRepositoryMock.Setup(repo => repo.GetAllTransactions())
             .ReturnsAsync(transactions);
 
         _mapperMock.Setup(mapper => mapper.Map<IEnumerable<TransactionDto>>(transactions))
@@ -59,7 +59,7 @@ public class TransactionServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count());
-        _transactionRepositoryMock.Verify(repo => repo.GetAllAsync(), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetAllTransactions(), Times.Once);
         _mapperMock.Verify(mapper => mapper.Map<IEnumerable<TransactionDto>>(transactions), Times.Once);
     }
 
@@ -70,7 +70,7 @@ public class TransactionServiceTest
         var emptyTransactionList = new List<Transaction>();
         var emptyDtoList = new List<TransactionDto>();
 
-        _transactionRepositoryMock.Setup(repo => repo.GetAllAsync())
+        _transactionRepositoryMock.Setup(repo => repo.GetAllTransactions())
             .ReturnsAsync(emptyTransactionList);
 
         _mapperMock.Setup(mapper => mapper.Map<IEnumerable<TransactionDto>>(emptyTransactionList))
@@ -82,7 +82,7 @@ public class TransactionServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
-        _transactionRepositoryMock.Verify(repo => repo.GetAllAsync(), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetAllTransactions(), Times.Once);
     }
 
     [Fact(DisplayName = "GetTransactionByIdAsync - Should return TransactionDto when Id exists")]
@@ -93,7 +93,7 @@ public class TransactionServiceTest
         var transaction = ServiceTestFactory.CreateTransaction(transactionId);
         var transactionDto = ServiceTestFactory.CreateTransactionDto(transactionId);
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(transactionId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(transactionId))
             .ReturnsAsync(transaction);
 
         _mapperMock.Setup(mapper => mapper.Map<TransactionDto>(transaction))
@@ -105,7 +105,7 @@ public class TransactionServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal(transactionId, result.Id);
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(transactionId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(transactionId), Times.Once);
         _mapperMock.Verify(mapper => mapper.Map<TransactionDto>(transaction), Times.Once);
     }
 
@@ -115,7 +115,7 @@ public class TransactionServiceTest
         // Arrange
         var nonExistentId = Guid.NewGuid();
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(nonExistentId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(nonExistentId))
             .ReturnsAsync((Transaction)null);
 
         // Act
@@ -123,7 +123,7 @@ public class TransactionServiceTest
 
         // Assert
         Assert.Null(result);
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(nonExistentId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(nonExistentId), Times.Once);
         _loggerMock.Verify(
             logger => logger.Log(
                 It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
@@ -152,10 +152,10 @@ public class TransactionServiceTest
             transactionDto.Time,
             store);
 
-        _storeRepositoryMock.Setup(repo => repo.GetByIdAsync(storeId))
+        _storeRepositoryMock.Setup(repo => repo.GetStoreById(storeId))
             .ReturnsAsync(store);
 
-        _transactionRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<Transaction>()))
+        _transactionRepositoryMock.Setup(repo => repo.AddTransaction(It.IsAny<Transaction>()))
             .ReturnsAsync(transaction);
 
         _mapperMock.Setup(mapper => mapper.Map<TransactionDto>(It.IsAny<Transaction>()))
@@ -167,8 +167,8 @@ public class TransactionServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal(transactionDto.Id, result.Id);
-        _storeRepositoryMock.Verify(repo => repo.GetByIdAsync(storeId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Transaction>()), Times.Once);
+        _storeRepositoryMock.Verify(repo => repo.GetStoreById(storeId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.AddTransaction(It.IsAny<Transaction>()), Times.Once);
         _mapperMock.Verify(mapper => mapper.Map<TransactionDto>(It.IsAny<Transaction>()), Times.Once);
     }
 
@@ -180,7 +180,7 @@ public class TransactionServiceTest
         var transactionDto = ServiceTestFactory.CreateTransactionDto(Guid.NewGuid());
         transactionDto.StoreId = nonExistentStoreId;
 
-        _storeRepositoryMock.Setup(repo => repo.GetByIdAsync(nonExistentStoreId))
+        _storeRepositoryMock.Setup(repo => repo.GetStoreById(nonExistentStoreId))
             .ReturnsAsync((Store)null);
 
         // Act
@@ -188,8 +188,8 @@ public class TransactionServiceTest
 
         // Assert
         Assert.Null(result);
-        _storeRepositoryMock.Verify(repo => repo.GetByIdAsync(nonExistentStoreId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Transaction>()), Times.Never);
+        _storeRepositoryMock.Verify(repo => repo.GetStoreById(nonExistentStoreId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.AddTransaction(It.IsAny<Transaction>()), Times.Never);
         _loggerMock.Verify(
             logger => logger.Log(
                 It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
@@ -210,10 +210,10 @@ public class TransactionServiceTest
         var existingTransaction = ServiceTestFactory.UpdateTransaction(storeId, store);
         var transactionDto = ServiceTestFactory.UpdateTransactionDto(transactionId, storeId);
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(transactionId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(transactionId))
             .ReturnsAsync(existingTransaction);
 
-        _transactionRepositoryMock.Setup(repo => repo.UpdateAsync(existingTransaction))
+        _transactionRepositoryMock.Setup(repo => repo.UpdateTransaction(existingTransaction))
             .ReturnsAsync(existingTransaction);
 
         _mapperMock.Setup(mapper => mapper.Map<TransactionDto>(existingTransaction))
@@ -225,8 +225,8 @@ public class TransactionServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal(transactionId, result.Id);
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(transactionId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.UpdateAsync(existingTransaction), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(transactionId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.UpdateTransaction(existingTransaction), Times.Once);
         _mapperMock.Verify(mapper => mapper.Map<TransactionDto>(existingTransaction), Times.Once);
     }
 
@@ -237,7 +237,7 @@ public class TransactionServiceTest
         var nonExistentId = Guid.NewGuid();
         var transactionDto = ServiceTestFactory.CreateTransactionDto(nonExistentId);
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(nonExistentId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(nonExistentId))
             .ReturnsAsync((Transaction)null);
 
         // Act
@@ -245,8 +245,8 @@ public class TransactionServiceTest
 
         // Assert
         Assert.Null(result);
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(nonExistentId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Transaction>()), Times.Never);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(nonExistentId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.UpdateTransaction(It.IsAny<Transaction>()), Times.Never);
         _loggerMock.Verify(
             logger => logger.Log(
                 It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
@@ -264,18 +264,18 @@ public class TransactionServiceTest
         var transactionId = Guid.NewGuid();
         var transaction = ServiceTestFactory.CreateTransaction(transactionId);
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(transactionId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(transactionId))
             .ReturnsAsync(transaction);
 
-        _transactionRepositoryMock.Setup(repo => repo.DeleteAsync(transactionId))
+        _transactionRepositoryMock.Setup(repo => repo.DeleteTransaction(transactionId))
             .Returns(Task.CompletedTask);
 
         // Act
         await _transactionService.DeleteTransactionAsync(transactionId);
 
         // Assert
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(transactionId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.DeleteAsync(transactionId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(transactionId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.DeleteTransaction(transactionId), Times.Once);
     }
 
     [Fact(DisplayName = "DeleteTransactionAsync - Should LogError when Transaction not found")]
@@ -284,18 +284,18 @@ public class TransactionServiceTest
         // Arrange
         var nonExistentId = Guid.NewGuid();
 
-        _transactionRepositoryMock.Setup(repo => repo.GetByIdAsync(nonExistentId))
+        _transactionRepositoryMock.Setup(repo => repo.GetTransactionById(nonExistentId))
             .ReturnsAsync((Transaction)null);
 
-        _transactionRepositoryMock.Setup(repo => repo.DeleteAsync(nonExistentId))
+        _transactionRepositoryMock.Setup(repo => repo.DeleteTransaction(nonExistentId))
             .Returns(Task.CompletedTask);
 
         // Act
         await _transactionService.DeleteTransactionAsync(nonExistentId);
 
         // Assert
-        _transactionRepositoryMock.Verify(repo => repo.GetByIdAsync(nonExistentId), Times.Once);
-        _transactionRepositoryMock.Verify(repo => repo.DeleteAsync(nonExistentId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.GetTransactionById(nonExistentId), Times.Once);
+        _transactionRepositoryMock.Verify(repo => repo.DeleteTransaction(nonExistentId), Times.Once);
         _loggerMock.Verify(
             logger => logger.Log(
                 It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),

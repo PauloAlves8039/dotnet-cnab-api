@@ -22,7 +22,7 @@ namespace CNAB.Application.Services
 
         public async Task<IEnumerable<StoreDto>> GetAllStoreAsync()
         {
-            var stores = await _storeRepository.GetAllAsync();
+            var stores = await _storeRepository.GetAllStores();
 
             return stores.Select(store => new StoreDto
             {
@@ -35,7 +35,7 @@ namespace CNAB.Application.Services
 
         public async Task<StoreDto> GetByIdStoreAsync(Guid id)
         {
-            var store = await _storeRepository.GetByIdAsync(id);
+            var store = await _storeRepository.GetStoreById(id);
 
             if (store == null) 
             {
@@ -57,7 +57,7 @@ namespace CNAB.Application.Services
 
             var store = new Store(storeInputDto.Name, storeInputDto.OwnerName);
 
-            await _storeRepository.AddAsync(store);
+            await _storeRepository.AddStore(store);
 
             return _mapper.Map<StoreDto>(store);
         }
@@ -65,7 +65,7 @@ namespace CNAB.Application.Services
         public async Task<StoreDto> UpdateStoreAsync(StoreInputDto storeInputDto)
         {
 
-            var existingStore = await _storeRepository.GetByIdAsync(storeInputDto.Id);
+            var existingStore = await _storeRepository.GetStoreById(storeInputDto.Id);
 
             if (existingStore == null) 
             {
@@ -75,26 +75,26 @@ namespace CNAB.Application.Services
 
             existingStore.UpdateDetails(storeInputDto.Name, storeInputDto.OwnerName);
 
-            await _storeRepository.UpdateAsync(existingStore);
+            await _storeRepository.UpdateStore(existingStore);
 
             return _mapper.Map<StoreDto>(existingStore);
         }
 
         public async Task DeleteStoreAsync(Guid id)
         {
-            var existingStore = await _storeRepository.GetByIdAsync(id);
+            var existingStore = await _storeRepository.GetStoreById(id);
 
             if (existingStore == null) 
             {
                 _logger.LogError("Store not found");
             }
 
-            await _storeRepository.DeleteAsync(id);
+            await _storeRepository.DeleteStore(id);
         }
 
         public async Task<decimal> GetStoreBalanceAsync(Guid storeId)
         {
-            var existingStore = await _storeRepository.GetByIdAsync(storeId);
+            var existingStore = await _storeRepository.GetStoreById(storeId);
 
             if (existingStore == null) 
             {

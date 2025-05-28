@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.Domain.Test", "tests\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.Application.Test", "tests\CNAB.Application.Test\CNAB.Application.Test.csproj", "{BBF64DE6-3B0E-4D93-AD71-1398E8B6B598}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNAB.Infra.Data.Test", "tests\CNAB.Infra.Data.Test\CNAB.Infra.Data.Test.csproj", "{D418A28A-F2E1-4521-BC6A-BF901DA094F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{BBF64DE6-3B0E-4D93-AD71-1398E8B6B598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBF64DE6-3B0E-4D93-AD71-1398E8B6B598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBF64DE6-3B0E-4D93-AD71-1398E8B6B598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D418A28A-F2E1-4521-BC6A-BF901DA094F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D418A28A-F2E1-4521-BC6A-BF901DA094F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D418A28A-F2E1-4521-BC6A-BF901DA094F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D418A28A-F2E1-4521-BC6A-BF901DA094F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +85,6 @@ Global
 		{CDB04A22-E651-49E3-B7A5-64E80F819502} = {E5834D57-45A7-4A14-863E-73C7883262F8}
 		{52CA82AF-F505-4654-8AEA-E8F8DDC99BFF} = {54BB62FC-7EAD-4131-A3D6-AD7672ADF7CF}
 		{BBF64DE6-3B0E-4D93-AD71-1398E8B6B598} = {54BB62FC-7EAD-4131-A3D6-AD7672ADF7CF}
+		{D418A28A-F2E1-4521-BC6A-BF901DA094F4} = {54BB62FC-7EAD-4131-A3D6-AD7672ADF7CF}
 	EndGlobalSection
 EndGlobal

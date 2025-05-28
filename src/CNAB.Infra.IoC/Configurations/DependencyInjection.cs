@@ -25,7 +25,6 @@ public static class DependencyInjection
 
         services.AddDbContext<IdentityApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IStoreRepository, StoreRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
 

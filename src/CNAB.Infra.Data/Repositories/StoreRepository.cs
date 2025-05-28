@@ -6,13 +6,20 @@ using Microsoft.Extensions.Logging;
 
 namespace CNAB.Infra.Data.Repositories;
 
-public class StoreRepository : Repository<Store>, IStoreRepository
+public class StoreRepository : IStoreRepository
 {
-    public StoreRepository(ApplicationDbContext context, ILogger<Store> logger) : base(context, logger) { }
+    protected readonly ApplicationDbContext _storeContext;
+    protected readonly ILogger<TransactionRepository> _logger;
 
-    public override async Task<IEnumerable<Store>> GetAllAsync()
+    public StoreRepository(ApplicationDbContext storeContext, ILogger<TransactionRepository> logger)
     {
-        var stores = await _context.Set<Store>()
+        _storeContext = storeContext;
+        _logger = logger;
+    }
+
+    public async Task<IEnumerable<Store>> GetAllStores()
+    {
+        var stores = await _storeContext.Set<Store>()
             .Include(s => s.Transactions)
             .ToListAsync();
 
@@ -25,9 +32,9 @@ public class StoreRepository : Repository<Store>, IStoreRepository
         return stores;
     }
 
-    public override async Task<Store> GetByIdAsync(Guid id)
+    public async Task<Store> GetStoreById(Guid id)
     {
-        var store = await _context.Set<Store>()
+        var store = await _storeContext.Set<Store>()
             .Include(s => s.Transactions)
             .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -39,9 +46,9 @@ public class StoreRepository : Repository<Store>, IStoreRepository
         return store;
     }
 
-    public async Task<Store> GetByNameAsync(string storeName)
+    public async Task<Store> GetStoreByName(string storeName)
     {
-        var store = await _context.Stores.FirstOrDefaultAsync(s => s.Name == storeName);
+        var store = await _storeContext.Stores.FirstOrDefaultAsync(s => s.Name == storeName);
 
         if (store == null)
         {
@@ -49,5 +56,54 @@ public class StoreRepository : Repository<Store>, IStoreRepository
         }
 
         return store;
+    }
+
+    public async Task<Store> AddStore(Store store)
+    {
+        try
+        {
+            _storeContext.Set<Store>().Add(store);
+            await _storeContext.SaveChangesAsync();
+            return store;
+        }
+        catch (DbUpdateException exception)
+        {
+            _logger.LogError($"Error when adding a new store: {exception.Message}");
+            throw;
+        }
+    }
+
+    public async Task<Store> UpdateStore(Store store)
+    {
+        try
+        {
+            _storeContext.Update(store);
+            await _storeContext.SaveChangesAsync();
+            return store;
+        }
+        catch (DbUpdateException exception)
+        {
+            _logger.LogError($"Error when updating the store: {exception.Message}");
+            throw;
+        }
+    }
+
+    public async Task DeleteStore(Guid id)
+    {
+        try
+        {
+            var store = await _storeContext.Set<Store>().FindAsync(id);
+
+            if (store != null)
+            {
+                _storeContext.Set<Store>().Remove(store);
+                await _storeContext.SaveChangesAsync();
+            }
+        }
+        catch (DbUpdateException exception)
+        {
+            _logger.LogError($"Error when deleting the store: {exception.Message}");
+            throw;
+        }
     }
 }

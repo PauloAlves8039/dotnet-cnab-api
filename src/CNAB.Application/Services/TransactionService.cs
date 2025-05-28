@@ -28,13 +28,13 @@ namespace CNAB.Application.Services
 
         public async Task<IEnumerable<TransactionDto>> GetAllTransactionsAsync()
         {
-            var transactions = await _transactionRepository.GetAllAsync();
+            var transactions = await _transactionRepository.GetAllTransactions();
             return _mapper.Map<IEnumerable<TransactionDto>>(transactions);
         }
 
         public async Task<TransactionDto> GetTransactionByIdAsync(Guid id)
         {
-            var transaction = await _transactionRepository.GetByIdAsync(id);
+            var transaction = await _transactionRepository.GetTransactionById(id);
 
             if (transaction == null)
             {
@@ -47,7 +47,7 @@ namespace CNAB.Application.Services
 
         public async Task<TransactionDto> AddTransactionAsync(TransactionDto transactionDto)
         {
-            var store = await _storeRepository.GetByIdAsync(transactionDto.StoreId);
+            var store = await _storeRepository.GetStoreById(transactionDto.StoreId);
 
             if (store == null)
             {
@@ -65,13 +65,13 @@ namespace CNAB.Application.Services
                 store
             );
 
-            await _transactionRepository.AddAsync(transaction);
+            await _transactionRepository.AddTransaction(transaction);
             return _mapper.Map<TransactionDto>(transaction);
         }
 
         public async Task<TransactionDto> UpdateTransactionAsync(TransactionDto transactionDto)
         {
-            var existingTransaction = await _transactionRepository.GetByIdAsync(transactionDto.Id);
+            var existingTransaction = await _transactionRepository.GetTransactionById(transactionDto.Id);
 
             if (existingTransaction == null)
             {
@@ -88,20 +88,20 @@ namespace CNAB.Application.Services
                 transactionDto.Time
             );
 
-            await _transactionRepository.UpdateAsync(existingTransaction);
+            await _transactionRepository.UpdateTransaction(existingTransaction);
             return _mapper.Map<TransactionDto>(existingTransaction);
         }
 
         public async Task DeleteTransactionAsync(Guid id)
         {
-            var existingTransaction = await _transactionRepository.GetByIdAsync(id);
+            var existingTransaction = await _transactionRepository.GetTransactionById(id);
 
             if (existingTransaction == null)
             {
                 _logger.LogError("Transaction not found");
             }
 
-            await _transactionRepository.DeleteAsync(id);
+            await _transactionRepository.DeleteTransaction(id);
         }
     }
 }
