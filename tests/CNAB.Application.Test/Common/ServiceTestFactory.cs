@@ -1,5 +1,7 @@
 using CNAB.Application.DTOs;
+using CNAB.Application.DTOs.Account;
 using CNAB.Domain.Entities;
+using CNAB.Domain.Entities.Account;
 using CNAB.Domain.Entities.enums;
 
 namespace CNAB.Application.Test.Common;
@@ -89,6 +91,19 @@ public static class ServiceTestFactory
         return transaction;
     }
 
+    public static Transaction CreateTransaction(Store store)
+    {
+        return new Transaction(
+            TransactionType.Debit,
+            DateTime.Now,
+            100m,
+            "12345678901",
+            "1234567890123456",
+            new TimeSpan(10, 30, 0),
+            store);
+    }
+
+
     public static Transaction UpdateTransaction(Guid storeId, Store store)
     {
         var transaction = new Transaction(
@@ -120,6 +135,23 @@ public static class ServiceTestFactory
         };
     }
 
+    public static TransactionDto CreateTransactionDtoInvalidEnum()
+    {
+        return new TransactionDto
+        {
+            Id = new Guid("218bc11d-6167-4166-85a0-28842e1ab4bf"),
+            Type = 999,
+            OccurrenceDate = DateTime.Now,
+            Amount = 100m,
+            CPF = "12345678901",
+            CardNumber = "64722****315",
+            Time = new TimeSpan(10, 30, 0),
+            StoreId = Guid.NewGuid(),
+            StoreName = "Test Store",
+            StoreOwnerName = "Test Owner"
+        };
+    }
+
     public static TransactionDto UpdateTransactionDto(Guid transactionId, Guid storeId)
     {
         var transactionDto = new TransactionDto
@@ -129,7 +161,7 @@ public static class ServiceTestFactory
             OccurrenceDate = DateTime.Now,
             Amount = 200m,
             CPF = "09876543210",
-            CardNumber = "6543210987654321",
+            CardNumber = "64722****315",
             Time = new TimeSpan(14, 45, 0),
             StoreId = storeId,
             StoreName = "Test Store",
@@ -152,7 +184,65 @@ public static class ServiceTestFactory
                "00962067601" +
                "74753****315" +
                "153453" +
-               "JOHN DOE      " +      
-               "JOHN'S Bar         "; 
+               "JOHN DOE      " +
+               "JOHN'S Bar         ";
+    }
+    
+    public static User CreateUser()
+    {
+        return new User(
+            email: "testuser@example.com",
+            password: "123456",
+            confirmPassword: "123456"
+        );
+    }
+
+    public static UserDto CreateUserDto()
+    {
+        return new UserDto
+        {
+            Email = "testuserdto@example.com",
+            Password = "123456",
+            ConfirmPassword = "123456"
+        };
+    }
+
+    public static Login CreateLogin()
+    {
+        return new Login(
+            email: "login@example.com",
+            password: "123456"
+        );
+    }
+
+    public static LoginDto CreateLoginDto()
+    {
+        return new LoginDto
+        {
+            Email = "login@example.com",
+            Password = "123456"
+        };
+    }
+
+    public static UserToken CreateUserToken()
+    {
+        return new UserToken
+        {
+            Authenticated = true,
+            Expiration = DateTime.Now.AddHours(1),
+            Token = "sometoken",
+            Message = "Authentication successful"
+        };
+    }
+
+    public static UserTokenDto CreateUserTokenDto()
+    {
+        return new UserTokenDto
+        {
+            Authenticated = true,
+            Expiration = DateTime.Now.AddHours(1),
+            Token = "sometoken",
+            Message = "Authentication successful"
+        };
     }
 }
