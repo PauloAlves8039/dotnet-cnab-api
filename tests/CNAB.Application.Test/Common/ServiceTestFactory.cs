@@ -28,6 +28,33 @@ public static class ServiceTestFactory
         return new Store("JOHN'S Bar", "JOHN DOE");
     }
 
+    public static List<StoreDto> GenerateStoresWithPositiveBalances()
+    {
+        return CreateStoreListWithBalances(
+            ("Store 1", 1000.50m),
+            ("Store 2", 2500.75m),
+            ("Store 3", 750.25m)
+        );
+    }
+
+    public static List<StoreDto> GenerateStoresWithNegativeBalances()
+    {
+        return CreateStoreListWithBalances(
+            ("Store 1", -100.00m),
+            ("Store 2", -200.00m),
+            ("Store 3", -150.00m)
+        );
+    }
+
+    public static List<StoreDto> GenerateStoresWithPositiveandNegativeBalances()
+    {
+        return CreateStoreListWithBalances(
+            ("Store 1", 1000.00m),
+            ("Store 2", -500.00m),
+            ("Store 3", 250.00m)
+        );
+    }
+
     public static StoreInputDto CreateStoreInputDto()
     {
         return new StoreInputDto
@@ -103,6 +130,19 @@ public static class ServiceTestFactory
             store);
     }
 
+    public static List<TransactionDto> CreateTransactionList(int count)
+    {
+        var transactions = new List<TransactionDto>();
+
+        for (int i = 0; i < count; i++)
+        {
+            var transaction = CreateTransactionDto(Guid.NewGuid());
+            transaction.Amount = (i + 1) * 100m;
+            transactions.Add(transaction);
+        }
+
+        return transactions;
+    }
 
     public static Transaction UpdateTransaction(Guid storeId, Store store)
     {
@@ -187,7 +227,7 @@ public static class ServiceTestFactory
                "JOHN DOE      " +
                "JOHN'S Bar         ";
     }
-    
+
     public static User CreateUser()
     {
         return new User(
@@ -244,5 +284,20 @@ public static class ServiceTestFactory
             Token = "sometoken",
             Message = "Authentication successful"
         };
+    }
+    
+    private static List<StoreDto> CreateStoreListWithBalances(params (string name, decimal balance)[] storeData)
+    {
+        var stores = new List<StoreDto>();
+
+        for (int i = 0; i < storeData.Length; i++)
+        {
+            var (name, balance) = storeData[i];
+            var store = CreateStoreDto(Guid.NewGuid(), name, $"Owner {i + 1}");
+            store.Balance = balance;
+            stores.Add(store);
+        }
+
+        return stores;
     }
 }
