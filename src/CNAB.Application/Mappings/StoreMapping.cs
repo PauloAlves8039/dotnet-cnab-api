@@ -12,15 +12,10 @@ public class StoreMapping : IRegister
             .Map(dest => dest.Balance, src => src.GetBalance());
 
         config.NewConfig<StoreDto, Store>()
-            .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.Name, src => src.Name)
-            .Map(dest => dest.OwnerName, src => src.OwnerName)
             .Ignore(dest => dest.Transactions);
 
         config.NewConfig<StoreInputDto, Store>()
-            .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.Name, src => src.Name)
-            .Map(dest => dest.OwnerName, src => src.OwnerName)
+            .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Transactions);
     }
 }
