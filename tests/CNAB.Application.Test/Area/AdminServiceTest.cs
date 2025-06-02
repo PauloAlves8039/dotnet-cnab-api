@@ -4,7 +4,7 @@ using CNAB.Application.DTOs;
 using CNAB.Application.Test.Common;
 using Moq;
 
-namespace CNAB.Application.Test.Services.Area;
+namespace CNAB.Application.Test.Area;
 
 public class AdminServiceTest
 {
