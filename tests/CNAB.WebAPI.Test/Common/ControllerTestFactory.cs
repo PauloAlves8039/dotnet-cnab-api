@@ -1,6 +1,9 @@
 using CNAB.Application.DTOs;
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Moq;
 
 namespace CNAB.WebAPI.Test.Common;
 
@@ -162,4 +165,37 @@ public static class ControllerTestFactory
 
         return transactionDto;
     }
+
+    public static Mock<UserManager<IdentityUser>> MockUserManager()
+    {
+        var store = new Mock<IUserStore<IdentityUser>>();
+        return new Mock<UserManager<IdentityUser>>(
+            store.Object,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+    public static Mock<SignInManager<IdentityUser>> MockSignInManager(Mock<UserManager<IdentityUser>> userManager)
+    {
+        var contextAccessor = new Mock<IHttpContextAccessor>();
+        var claimsFactory = new Mock<IUserClaimsPrincipalFactory<IdentityUser>>();
+
+        return new Mock<SignInManager<IdentityUser>>(
+            userManager.Object,
+            contextAccessor.Object,
+            claimsFactory.Object,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
 }
