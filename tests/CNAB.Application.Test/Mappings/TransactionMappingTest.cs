@@ -1,8 +1,8 @@
 using CNAB.Application.DTOs;
 using CNAB.Application.Mappings;
-using CNAB.Application.Test.Common;
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
+using CNAB.TestHelpers.Factories;
 using FluentAssertions;
 using Mapster;
 
@@ -83,6 +83,4 @@ public class TransactionMappingTest
         bool isValidEnum = Enum.IsDefined(typeof(TransactionType), mappedTransaction.Type);
         isValidEnum.Should().BeFalse();
     }
-
-
 }
