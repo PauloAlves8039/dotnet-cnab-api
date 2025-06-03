@@ -37,4 +37,20 @@ public class TransactionDto
     [Required(ErrorMessage = "StoreOwnerName is required")]
     [StringLength(100, ErrorMessage = "StoreOwnerName cannot exceed 100 characters")]
     public string StoreOwnerName { get; set; }
+
+    public TransactionDto() { }
+
+    public TransactionDto(Guid id, int type, DateTime occurrenceDate, decimal amount, string cPF, string cardNumber, TimeSpan time, Guid storeId, string storeName, string storeOwnerName)
+    {
+        Id = id;
+        Type = type;
+        OccurrenceDate = occurrenceDate;
+        Amount = amount;
+        CPF = cPF;
+        CardNumber = cardNumber;
+        Time = time;
+        StoreId = storeId;
+        StoreName = storeName;
+        StoreOwnerName = storeOwnerName;
+    }
 }

@@ -2,7 +2,7 @@ using CNAB.Application.Interfaces.Area;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CNAB.WebAPI.Controllers;
+namespace CNAB.WebAPI.Controllers.Area;
 
 [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminAccess")]
 [Route("api/[controller]")]

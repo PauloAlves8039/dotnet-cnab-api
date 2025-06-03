@@ -3,7 +3,7 @@ using CNAB.Application.Interfaces.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CNAB.WebAPI.Controllers;
+namespace CNAB.WebAPI.Controllers.Account;
 
 [Route("api/[controller]")]
 [ApiController]
