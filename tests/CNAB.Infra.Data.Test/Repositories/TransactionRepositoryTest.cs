@@ -3,6 +3,7 @@ using CNAB.Domain.Interfaces;
 using CNAB.Infra.Data.Context;
 using CNAB.Infra.Data.Repositories;
 using CNAB.Infra.Data.Test.Common;
+using CNAB.TestHelpers.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
