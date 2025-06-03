@@ -1,6 +1,6 @@
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
-using CNAB.Domain.Test.Common;
+using CNAB.TestHelpers.Factories;
 using FluentAssertions;
 
 namespace CNAB.Domain.Test.Entities;
