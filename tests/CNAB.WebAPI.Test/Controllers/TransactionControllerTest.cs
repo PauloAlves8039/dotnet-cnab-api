@@ -1,7 +1,7 @@
 using CNAB.Application.DTOs;
 using CNAB.Application.Interfaces;
+using CNAB.TestHelpers.Factories;
 using CNAB.WebAPI.Controllers;
-using CNAB.WebAPI.Test.Common; 
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq; 

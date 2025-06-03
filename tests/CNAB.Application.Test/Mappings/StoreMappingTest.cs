@@ -1,7 +1,7 @@
 using CNAB.Application.DTOs;
 using CNAB.Application.Mappings;
-using CNAB.Application.Test.Common;
 using CNAB.Domain.Entities;
+using CNAB.TestHelpers.Factories;
 using FluentAssertions;
 using Mapster;
 
@@ -79,7 +79,6 @@ public class StoreMappingTest
 
         // Act
         var storeDto = nullStore.Adapt<StoreDto>(_config);
-
 
         // Assert
         storeDto.Should().BeNull();

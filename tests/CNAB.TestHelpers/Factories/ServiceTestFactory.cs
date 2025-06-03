@@ -4,7 +4,7 @@ using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.Account;
 using CNAB.Domain.Entities.enums;
 
-namespace CNAB.Application.Test.Common;
+namespace CNAB.TestHelpers.Factories;
 
 public static class ServiceTestFactory
 {
@@ -16,11 +16,6 @@ public static class ServiceTestFactory
             new Store("Store B", "Owner B"),
             new Store("Store C", "Owner C")
         };
-    }
-
-    public static Store CreateStore(string name, string ownerName)
-    {
-        return new Store(name, ownerName);
     }
 
     public static Store CreateStore()
@@ -254,16 +249,6 @@ public static class ServiceTestFactory
             password: "123456"
         );
     }
-
-    public static LoginDto CreateLoginDto()
-    {
-        return new LoginDto
-        {
-            Email = "login@example.com",
-            Password = "123456"
-        };
-    }
-
     public static UserToken CreateUserToken()
     {
         return new UserToken
@@ -275,17 +260,6 @@ public static class ServiceTestFactory
         };
     }
 
-    public static UserTokenDto CreateUserTokenDto()
-    {
-        return new UserTokenDto
-        {
-            Authenticated = true,
-            Expiration = DateTime.Now.AddHours(1),
-            Token = "sometoken",
-            Message = "Authentication successful"
-        };
-    }
-    
     private static List<StoreDto> CreateStoreListWithBalances(params (string name, decimal balance)[] storeData)
     {
         var stores = new List<StoreDto>();

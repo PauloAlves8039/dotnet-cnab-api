@@ -1,8 +1,9 @@
 using CNAB.Application.Interfaces;
 using CNAB.Application.Services.Area;
 using CNAB.Application.DTOs;
-using CNAB.Application.Test.Common;
+
 using Moq;
+using CNAB.TestHelpers.Factories;
 
 namespace CNAB.Application.Test.Area;
 

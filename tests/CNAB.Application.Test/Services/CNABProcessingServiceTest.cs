@@ -1,8 +1,8 @@
 using CNAB.Application.Services;
-using CNAB.Application.Test.Common;
 using CNAB.Domain.Entities;
 using CNAB.Domain.Entities.enums;
 using CNAB.Domain.Interfaces;
+using CNAB.TestHelpers.Factories;
 using MapsterMapper;
 using Moq;
 

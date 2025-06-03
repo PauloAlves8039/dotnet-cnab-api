@@ -1,7 +1,7 @@
-using CNAB.Domain.Entities;
 using CNAB.Infra.Data.Context;
 using CNAB.Infra.Data.Repositories;
 using CNAB.Infra.Data.Test.Common;
+using CNAB.TestHelpers.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -31,7 +31,7 @@ public class StoreRepositoryTest
     {
         // Arrange
         using var context = new ApplicationDbContext(_dbContextOptions);
-        var stores = RepositoryTestFactory.GenerateListStores(); // você deve criar esta factory similar ao GenerateListTransactions
+        var stores = RepositoryTestFactory.GenerateListStores(); 
 
         context.Stores.AddRange(stores);
         await context.SaveChangesAsync();

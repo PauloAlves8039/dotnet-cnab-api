@@ -6,7 +6,7 @@ using CNAB.WebAPI.Controllers.Account;
 using CNAB.Application.DTOs.Account;
 using CNAB.Application.Interfaces.Account;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
-using CNAB.WebAPI.Test.Common;
+using CNAB.TestHelpers.Factories;
 
 namespace CNAB.WebAPI.Test.Account;
 
