@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CNAB.WebAPI\CNAB.WebAPI.csproj" />
+    <ProjectReference Include="..\CNAB.TestHelpers\CNAB.TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

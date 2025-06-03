@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace CNAB.WebAPI.Test.Common;
+namespace CNAB.TestHelpers.Factories;
 
 public static class ControllerTestFactory
 {
