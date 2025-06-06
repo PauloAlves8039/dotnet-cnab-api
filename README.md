@@ -1,4 +1,4 @@
-<h1 align="center">CNAB - API</h1>
+<h1 align="center">💵 CNAB - API</h1>
 
 <p align="center">
   <a href="https://learn.microsoft.com/pt-br/dotnet/"><img alt="DotNet 6" src="https://img.shields.io/badge/.NET-5C2D91?logo=.net&logoColor=white&style=for-the-badge" /></a>
@@ -18,7 +18,15 @@ The project is an `MVP (Minimum Viable Product)` developed for academic purposes
 
 File used for testing: [CNAB.txt](https://github.com/PauloAlves8039/dotnet-cnab-api/blob/master/src/CNAB.WebAPI/Resources/Files/CNAB.txt).
 
-## ✅ Technical Decisions
+## 📘 Business rule
+
+This project primarily focuses on the import and normalization of financial transactions. Data entry can happen in two ways: either by uploading `CNAB` files or through direct input via fields tied to the `Store` and `Transaction` entities. The web application handles processing the CNAB data specifically, it divides transaction values by 100 for proper normalization and then stores everything in a relational database. Afterward, the system displays a list of operations grouped by store, complete with a running total balance for each.
+
+To manage this information, the system includes full `CRUD (Create, Read, Update, Delete)` capabilities for the Store entity, allowing users to list, view details of, create, update, and delete stores. Similarly, the Transaction entity also boasts comprehensive CRUD support, enabling individual management of its operations.
+
+It's worth noting that the CNAB file parsing service is accessible via the `/upload-cnab-file` endpoint within the CNABController, serving as the entry point for data processing and persistence. On top of that, we've implemented a dedicated area that provides exclusive metrics and insights for administrator users.
+
+## 📌 Technical Decisions
 
 - `Web API`:  I chose to build an API to provide more flexibility for developing a front-end application using a modern SPA framework.
 - `Clean Architecture`: The goal of applying this architecture was to make the API scalable and well-structured for adding new features.
@@ -123,54 +131,59 @@ http://localhost:8080/swagger/index.html
 
 ## 🎯 API Endpoints
 
+- **Base URL(Store, Transaction, User):** `http://localhost:8080`
+- **Admin URL:** `http://localhost:8080/api/Admin`
+- **CNAB URL:** `http://localhost:8080/CNAB`
+
+
 ### 🛠️ Admin
 
-| HTTP Method | URL                                                 | Description                                       |
+| Method      | Endpoint                                                 | Description                                  |
 |-------------|---------------------------------------|-----------------------------------------------------------------|
-| `GET`       | `http://localhost:8080/api/Admin/total-balance`     | Retrieves the total balance of all transactions.  |
-| `GET`       | `http://localhost:8080/api/Admin/store-count`       | Returns the total count of registered stores.     |
-| `GET`       | `http://localhost:8080/api/Admin/transaction-count` | Returns the total count of transactions.          |
+| `GET`       | `/total-balance`     | Retrieves the total balance of all transactions.  |
+| `GET`       | `/store-count`       | Returns the total count of registered stores.     |
+| `GET`       | `/transaction-count` | Returns the total count of transactions.          |
 
 ---
 
 ### 📄 CNAB
 
-| HTTP Method | URL                                                 | Description                                       |
+| Method      | Endpoint                                                 | Description                                  |
 |-------------|------------------------------------|--------------------------------------------------------------------|
-| `POST`      | `http://localhost:8080/CNAB/upload-cnab-file` | Uploads a CNAB file for processing.                     |
+| `POST`      | `/upload-cnab-file` | Uploads a CNAB file for processing.                     |
 
 ---
 
 ### 🏬 Store
 
-| HTTP Method | URL                                                 | Description                                       |
+| Method      | Endpoint                                                 | Description                                  |
 |-------------|------------------------------------|--------------------------------------------------------------------|
-| `GET`       | `http://localhost:8080/api/Store`      | Lists all stores.                                              |
-| `GET`       | `http://localhost:8080/api/Store/{id}` | Gets details of a specific store by ID.                        |
-| `POST`      | `http://localhost:8080/api/Store`      | Creates a new store.                                           |
-| `PUT`       | `http://localhost:8080/api/Store/{id}` | Updates an existing store by ID.                               |
-| `DELETE`    | `http://localhost:8080/api/Store/{id}` | Deletes an existing store by ID.                               |
+| `GET`       | `/api/Store`      | Lists all stores.                                              |
+| `GET`       | `/api/Store/{id}` | Gets details of a specific store by ID.                        |
+| `POST`      | `/api/Store`      | Creates a new store.                                           |
+| `PUT`       | `/api/Store/{id}` | Updates an existing store by ID.                               |
+| `DELETE`    | `/api/Store/{id}` | Deletes an existing store by ID.                               |
 
 ---
 
 ### 💳 Transaction
 
-| HTTP Method | URL                                                 | Description                                        |
+| Method      | Endpoint                                                 | Description                                   |
 |-------------|---------------------------------------------|------------------------------------------------------------|
-| `GET`       | `http://localhost:8080/api/Transaction`        | Lists all transactions.                                 |
-| `GET`       | `http://localhost/api/Transaction/{id}`        | Gets details of a specific transaction by ID.           |
-| `POST`      | `http://localhost:8080/api/Transaction`        | Creates a new transaction.                              |
-| `PUT`       | `http://localhost:8080/api/Transaction/{id}`   | Updates an existing transaction by ID.                  |
-| `DELETE`    | `http://localhost:8080/api/Transaction/{id}`   | Deletes an existing transaction by ID.                  |
+| `GET`       | `/api/Transaction`        | Lists all transactions.                                 |
+| `GET`       | `/api/Transaction/{id}`        | Gets details of a specific transaction by ID.      |
+| `POST`      | `/api/Transaction`        | Creates a new transaction.                              |
+| `PUT`       | `/api/Transaction/{id}`   | Updates an existing transaction by ID.                  |
+| `DELETE`    | `/api/Transaction/{id}`   | Deletes an existing transaction by ID.                  |
 
 ---
 
 ### 👥 User
 
-| HTTP Method | URL                                                 | Description                                        |
+| Method      | Endpoint                                                 | Description                                   |
 |-------------|------------------------------------|---------------------------------------------------------------------|
-| `POST`      | `http://localhost:8080/api/User/register` | Registers a new user.                                        |
-| `POST`      | `http://localhost:8080/api/User/login`    | Logs in a user.                                              |
+| `POST`      | `/api/User/register` | Registers a new user.                                        |
+| `POST`      | `/api/User/login`    | Logs in a user.                                              |
 
 ## 👤 Author
 
